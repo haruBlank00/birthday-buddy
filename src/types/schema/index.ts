@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isValid } from "date-fns";
 import { z } from "zod";
+import { UUID } from "crypto";
 export const birthdaySchema = z.object({
   name: z
     .string({
@@ -22,6 +23,8 @@ export const birthdaySchema = z.object({
     .optional(),
 });
 
-export type TBirthdayValues = z.infer<typeof birthdaySchema>;
-
+export type TNewBirthday = z.infer<typeof birthdaySchema>;
+export type TBirthday = TNewBirthday & {
+  id: UUID;
+};
 export const birthdaySchemaResolver = zodResolver(birthdaySchema);

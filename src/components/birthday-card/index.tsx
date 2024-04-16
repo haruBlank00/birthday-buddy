@@ -1,12 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { TBirthday } from "@/types/schema";
 import { differenceInYears } from "date-fns";
 
-type TBirthdayCardProps = {
-  name: string;
-  dob: Date;
-  image: string;
-};
-export const BirthdayCard = ({ name, dob, image }: TBirthdayCardProps) => {
+export const BirthdayCard = ({ name, dob, image }: TBirthday) => {
   const age = differenceInYears(new Date(), dob);
   const ageString = age > 1 ? `${age} years` : `${age} year`;
 
