@@ -5,30 +5,50 @@ import { useDisclosure } from "@/hooks/useDisclosure";
 import { TBirthday, birthdaySchemaResolver } from "@/types/schema";
 import { formatISO } from "date-fns";
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { BirthdayFormDialogue } from "./components/birthday-form";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 function App() {
   const [birthdays, setBirthdays] = useState<TBirthday[]>([]);
+  const { getItem, setItem } = useLocalStorage<TBirthday[], "birthdays">();
   const {
     isOpen: isFormOpen,
     close: closeForm,
     open: openForm,
   } = useDisclosure();
 
+  useEffect(() => {
+    const birthdays = getItem("birthdays");
+    if (birthdays) {
+      setBirthdays(birthdays);
+    }
+  }, []);
+
+  const form = useForm({
+    mode: "onSubmit",
+    resolver: birthdaySchemaResolver,
+    defaultValues: {
+      id: "",
+      name: "",
+      dob: "",
+      image: "",
+    },
+  });
+
   const onSubmit = (data: TBirthday) => {
     const haveId = Boolean(data.id);
     if (haveId) {
-      setBirthdays((birthdays) =>
-        birthdays.map((birthday) => {
-          if (birthday.id === data.id) {
-            return data;
-          }
-          return birthday;
-        })
-      );
+      const updatedBirthdays = birthdays.map((birthday) => {
+        if (birthday.id === data.id) {
+          return data;
+        }
+        return birthday;
+      });
+      setBirthdays(updatedBirthdays);
+      setItem("birthdays", updatedBirthdays);
       toast("Birthday updated successfully", {
         description: `You updated birthday for ${data.name}`,
         icon: <Plus className="mr-4" />,
@@ -42,28 +62,19 @@ function App() {
       image: data.image || "https://github.com/shadcn.png",
     };
 
-    setBirthdays((birthdays) => [...birthdays, newBirthday]);
+    const newBirthdays = [...birthdays, newBirthday];
+    setBirthdays(newBirthdays);
+    setItem("birthdays", newBirthdays);
     toast("Birthday added successfully", {
       description: `You added birthday for ${data.name}`,
       icon: <Plus className="mr-4" />,
     });
   };
 
-  const form = useForm({
-    mode: "onSubmit",
-    resolver: birthdaySchemaResolver,
-    defaultValues: {
-      id: "",
-      name: "",
-      dob: "",
-      image: "",
-    },
-  });
-
   const deleteBirthdayHandler = (id: string) => {
-    setBirthdays((birthdays) =>
-      birthdays.filter((birthday) => birthday.id !== id)
-    );
+    const newBirthdays = birthdays.filter((birthday) => birthday.id !== id);
+    setBirthdays(newBirthdays);
+    setItem("birthdays", newBirthdays);
     toast("Birthday deleted successfully", {
       description: `You deleted a birthday`,
     });
