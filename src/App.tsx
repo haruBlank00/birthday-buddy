@@ -6,6 +6,7 @@ import { TBirthday, TNewBirthday } from "@/types/schema";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { BirthdayFormDialogue } from "./components/birthday-form";
+import { toast } from "sonner";
 
 function App() {
   const [birthdays, setBirthdays] = useState<TBirthday[]>([]);
@@ -20,11 +21,16 @@ function App() {
     };
 
     setBirthdays((birthdays) => [...birthdays, newBirthday]);
+    toast("Birthday added successfully", {
+      description: `You added birthday for ${data.name}`,
+      icon: <Plus className="mr-4" />,
+    });
   };
 
   const birthdayCards = birthdays.map((birthday) => (
     <BirthdayCard {...birthday} key={birthday.id} />
   ));
+
   return (
     <div className="h-screen bg-red-400 grid place-items-center">
       <BirthdayFormDialogue open={isOpen} close={close} onSubmit={onSubmit} />
