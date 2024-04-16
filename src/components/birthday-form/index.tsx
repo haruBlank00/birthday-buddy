@@ -27,12 +27,12 @@ export const BirthdayFormDialogue = ({
 }: BirthdayFormDialogueProps) => {
   const submitBtn = useRef<HTMLButtonElement>(null);
   const form = useForm({
-    mode: "all",
+    mode: "onSubmit",
     resolver: birthdaySchemaResolver,
     defaultValues: {
       name: "",
       dob: "",
-      image: undefined,
+      image: "",
     },
   });
 
@@ -63,7 +63,7 @@ export const BirthdayFormDialogue = ({
               onSubmit={form.handleSubmit(onSubmitHandler)}
             >
               <FormBuilder fields={birthdayFormFields} form={form} />
-              <Button className="w-full hidden" ref={submitBtn}>
+              <Button className="w-full hidden" ref={submitBtn} type="submit">
                 Add birthday
               </Button>
             </form>
@@ -71,8 +71,10 @@ export const BirthdayFormDialogue = ({
         </div>
 
         <DialogFooter>
-          <Button onClick={() => submitBtn.current?.click()}>Create</Button>
-          <Button variant={"outline"} onClick={onClose}>
+          <Button onClick={() => submitBtn.current?.click()} type="button">
+            Create
+          </Button>
+          <Button variant={"outline"} onClick={onClose} type="button">
             Close
           </Button>
         </DialogFooter>
