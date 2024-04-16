@@ -1,3 +1,4 @@
+import { FormBuilder } from "@/components/form-builder";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,51 +10,49 @@ import {
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { birthdayFormFields } from "@/forms/birthday-form";
-import { TNewBirthday, birthdaySchemaResolver } from "@/types/schema";
-import { useForm } from "react-hook-form";
-import { FormBuilder } from "@/components/form-builder";
+import { TBirthday } from "@/types/schema";
 import { useRef } from "react";
+import { UseFormReturn } from "react-hook-form";
 
 type BirthdayFormDialogueProps = {
   open: boolean;
   close: () => void;
-  onSubmit: (data: TNewBirthday) => void;
+  onSubmit: (data: TBirthday) => void;
+  form: UseFormReturn<TBirthday>;
 };
 
 export const BirthdayFormDialogue = ({
   open,
   close,
   onSubmit,
+  form,
 }: BirthdayFormDialogueProps) => {
   const submitBtn = useRef<HTMLButtonElement>(null);
-  const form = useForm({
-    mode: "onSubmit",
-    resolver: birthdaySchemaResolver,
-    defaultValues: {
-      name: "",
-      dob: "",
-      image: "",
-    },
-  });
 
-  const onSubmitHandler = (data: TNewBirthday) => {
+  const onSubmitHandler = (data: TBirthday) => {
     onSubmit(data);
     onClose();
   };
 
   const onClose = () => {
-    form.reset();
+    form.reset({
+      dob: "",
+      image: "",
+      name: "",
+      id: "",
+    });
     close();
   };
 
+  const haveId = Boolean(form.getValues("id"));
+  const title = haveId ? "Edit birthday" : "Add birthday";
+  const description = haveId ? "Edit your birthday" : "Add your birthday";
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add a new birthday</DialogTitle>
-          <DialogDescription>
-            Enter the name and date of birth of the person you want to add
-          </DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
         <div>
@@ -64,7 +63,7 @@ export const BirthdayFormDialogue = ({
             >
               <FormBuilder fields={birthdayFormFields} form={form} />
               <Button className="w-full hidden" ref={submitBtn} type="submit">
-                Add birthday
+                {title}
               </Button>
             </form>
           </Form>
@@ -72,7 +71,7 @@ export const BirthdayFormDialogue = ({
 
         <DialogFooter>
           <Button onClick={() => submitBtn.current?.click()} type="button">
-            Create
+            {title}
           </Button>
           <Button variant={"outline"} onClick={onClose} type="button">
             Close

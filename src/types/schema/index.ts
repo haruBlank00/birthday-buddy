@@ -1,13 +1,24 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { isValid } from "date-fns";
 import { z } from "zod";
-import { UUID } from "crypto";
 
 const urlSchema = z.string().url({
-  message: "Please enter a valid url",
+  message: "Please enter a valid url.",
+});
+
+const uuidSchema = z.string().uuid({
+  message: "Please enter a valid uuid.",
 });
 
 export const birthdaySchema = z.object({
+  id: z
+    .string()
+    .default("")
+    .refine((id) => {
+      if (!id) return true;
+      const result = uuidSchema.safeParse(id);
+      return result.success;
+    }),
   name: z
     .string({
       required_error: "Please enter a name.",
@@ -27,8 +38,6 @@ export const birthdaySchema = z.object({
   }, "Please enter a valid url."),
 });
 
-export type TNewBirthday = z.infer<typeof birthdaySchema>;
-export type TBirthday = TNewBirthday & {
-  id: UUID;
-};
+export type TBirthday = z.infer<typeof birthdaySchema>;
+
 export const birthdaySchemaResolver = zodResolver(birthdaySchema);
