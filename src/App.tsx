@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { BirthdayCard } from "@/components/birthday-card";
 
 function App() {
   return (
@@ -14,17 +14,12 @@ function App() {
           </CardTitle>
         </CardHeader>
 
-        <CardContent>
-          <div className="shadow p-4 flex items-center gap-x-4">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>Ben</AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="text-2xl capitalize font-semibold">Ben</p>
-              <p className="text-gray-400">29 years</p>
-            </div>
-          </div>
+        <CardContent className="space-y-4">
+          <BirthdayCard
+            dob={new Date("2022-01-01")}
+            image="https://github.com/shadcn.png"
+            name="Shadcn"
+          />
         </CardContent>
       </Card>
     </div>
