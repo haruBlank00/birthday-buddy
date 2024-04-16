@@ -1,30 +1,17 @@
 import { BirthdayCard } from "@/components/birthday-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form } from "@/components/ui/form";
-import { birthdayFormFields } from "@/forms/birthday-form";
-import {
-  TBirthday,
-  TNewBirthday,
-  birthdaySchemaResolver,
-} from "@/types/schema";
+import { useDisclosure } from "@/hooks/useDisclosure";
+import { TBirthday, TNewBirthday } from "@/types/schema";
+import { Plus } from "lucide-react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { FormBuilder } from "./components/form-builder";
+import { BirthdayFormDialogue } from "./components/birthday-form";
 
 function App() {
   const [birthdays, setBirthdays] = useState<TBirthday[]>([]);
-  const form = useForm({
-    mode: "all",
-    resolver: birthdaySchemaResolver,
-    defaultValues: {
-      name: "",
-      dob: "",
-      image: undefined,
-    },
-  });
+  const { isOpen, close, open } = useDisclosure();
 
-  const onSubmitHandler = (data: TNewBirthday) => {
+  const onSubmit = (data: TNewBirthday) => {
     const newBirthday: TBirthday = {
       id: crypto.randomUUID(),
       name: data.name,
@@ -33,36 +20,28 @@ function App() {
     };
 
     setBirthdays((birthdays) => [...birthdays, newBirthday]);
-    form.reset();
   };
 
+  const birthdayCards = birthdays.map((birthday) => (
+    <BirthdayCard {...birthday} key={birthday.id} />
+  ));
   return (
     <div className="h-screen bg-red-400 grid place-items-center">
+      <BirthdayFormDialogue open={isOpen} close={close} onSubmit={onSubmit} />
       <Card className="w-[650px]">
         <CardHeader>
           <CardTitle className="flex justify-between items-center">
             5 Birthdays Today
             <div>
-              <button>Add </button>
+              <Button onClick={open}>
+                <Plus className="mr-2" />
+                Add
+              </Button>
             </div>
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="space-y-4">
-          <Form {...form}>
-            <form
-              className="space-y-4"
-              onSubmit={form.handleSubmit(onSubmitHandler)}
-            >
-              <FormBuilder fields={birthdayFormFields} form={form} />
-              <Button className="w-full">Add birthday</Button>
-            </form>
-          </Form>
-
-          {birthdays.map((birthday) => (
-            <BirthdayCard {...birthday} />
-          ))}
-        </CardContent>
+        <CardContent className="space-y-4">{birthdayCards}</CardContent>
       </Card>
     </div>
   );
